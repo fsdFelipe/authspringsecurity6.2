@@ -34,10 +34,8 @@ public class AuthController {
 		try {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(credenciaisDto.email(), credenciaisDto.senha());
 		Authentication auth = authenticationMaganer.authenticate(usernamePassword);
-		
-		UserDetails usuario = (MyUserDetails) auth.getPrincipal();
 
-		return ResponseEntity.ok(usuario);
+		return ResponseEntity.ok(authService.getJwtTokenAfterAuthentication(auth));
 		} catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
         }

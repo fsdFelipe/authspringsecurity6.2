@@ -20,11 +20,14 @@ public class JwtService {
 	  public JwtService(JwtEncoder encoder) {
 	    this.encoder = encoder;
 	  }
+	  
+	  public long getTokenExpiry() {
+	        return 36000L;
+	    }
 
 	  public String generateToken(Authentication authentication) {
 		 log.info("[JwtTokenGenerator:generateAccessToken] Token Creation Started for:{}", authentication.getName());
 	    Instant now = Instant.now();
-	    long expiry = 36000L;
 
 	    String scope = authentication
 	        .getAuthorities().stream()
@@ -35,7 +38,7 @@ public class JwtService {
 	    JwtClaimsSet claims = JwtClaimsSet.builder()
 	        .issuer("authspringsecurity6.2")
 	        .issuedAt(now)
-	        .expiresAt(now.plusSeconds(expiry))
+	        .expiresAt(now.plusSeconds(getTokenExpiry()))
 	        .subject(authentication.getName())
 	        .claim("scope", scope)
 	        .build();
