@@ -1,5 +1,6 @@
 package com.app.auth.services;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class JwtService {
 	  }
 	  
 	  public long getTokenExpiry() {
-	        return 36000L;
+	        return 59L;
 	    }
 
 	  public String generateToken(Authentication authentication) {
@@ -47,5 +48,37 @@ public class JwtService {
 	        JwtEncoderParameters.from(claims))
 	        .getTokenValue();
 	  }
+	  
+	  public String getTokenExpiryInReadableFormat() {
+	        long expirySeconds = getTokenExpiry(); // Obtenha o tempo de expiração real conforme necessário
+
+	        // Converte os segundos em uma duração
+	        Duration duration = Duration.ofSeconds(expirySeconds);
+
+	        // Extrai os componentes de tempo da duração
+	        long semanas = duration.toDays() / 7;
+	        long dias = duration.toDays() % 7;
+	        long horas = duration.toHours() % 24;
+	        long minutos = duration.toMinutes() % 60;
+	        long segundos = duration.getSeconds() % 60;
+
+	        // Constrói a representação de tempo legível
+	        StringBuilder sb = new StringBuilder();
+	        if (semanas > 0) {
+	            sb.append(semanas).append(" semana").append(semanas > 1 ? "s, " : ", ");
+	        }
+	        if (dias > 0) {
+	            sb.append(dias).append(" dia").append(dias > 1 ? "s, " : ", ");
+	        }
+	        if (horas > 0) {
+	            sb.append(horas).append(" hora").append(horas > 1 ? "s, " : ", ");
+	        }
+	        if (minutos > 0) {
+	            sb.append(minutos).append(" minuto").append(minutos > 1 ? "s, " : ", ");
+	        }
+	            sb.append(segundos).append(" segundos");
+
+	        return sb.toString().replaceAll(", $", "");
+	    }
 
 }

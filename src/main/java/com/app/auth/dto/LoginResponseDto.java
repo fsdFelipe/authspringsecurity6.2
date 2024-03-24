@@ -20,7 +20,7 @@ public class LoginResponseDto {
     private String accessToken;
 
     @JsonProperty("access_token_expiry")
-    private Long accessTokenExpiry;
+    private String accessTokenExpiry;
 
     @JsonProperty("token_type")
     private TokenType tokenType;

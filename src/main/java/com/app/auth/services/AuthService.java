@@ -52,7 +52,7 @@ public class AuthService {
 			}
 
 			String accessToken = jwtService.generateToken(authentication);
-			long expiry = jwtService.getTokenExpiry();
+			String expiry = jwtService.getTokenExpiryInReadableFormat();
 
 			log.info("[AuthService:userSignInAuth] Access token for user:{}, has been generated",usuario.getEmail());
 	        return  LoginResponseDto.builder()
