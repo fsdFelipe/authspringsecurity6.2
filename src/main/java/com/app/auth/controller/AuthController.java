@@ -43,4 +43,5 @@ public class AuthController {
 	    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto registerDto){
 	        return ResponseEntity.ok(authService.salvar(registerDto));
 	    }
+	 
 }

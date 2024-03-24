@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,9 +17,14 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.app.auth.dto.RSAKeyRecord;
+import com.app.auth.security.JwtAuthorizationFilter;
+import com.app.auth.security.JwtValidateToken;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -28,10 +34,13 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 	
 	@Autowired
 	private RSAKeyRecord rsaKeyRecord;
+	@Autowired
+	private JwtValidateToken jwtValidateToken;
 	
 	private static final String[] PUBLIC_MATHERS_GET = {
 			"/h2-console/**",
@@ -55,6 +64,11 @@ public class SecurityConfig {
 	                		.anyRequest().authenticated())
 	                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
 	                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	                .addFilterBefore(new JwtAuthorizationFilter(rsaKeyRecord, jwtValidateToken), UsernamePasswordAuthenticationFilter.class)
+	                .exceptionHandling(ex -> {
+	                     ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
+	                     ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+	                 })
 	                .build();
 	    }
 	 
