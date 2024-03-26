@@ -31,7 +31,6 @@ public class JwtValidateToken {
         boolean isTokenExpired = getIfTokenIsExpired(jwtToken);
         boolean isTokenUserSameAsDatabase = userName.equals(userDetails.getUsername());
         return !isTokenExpired  && isTokenUserSameAsDatabase;
-
     }
 
     private boolean getIfTokenIsExpired(Jwt jwtToken) {
@@ -44,9 +43,9 @@ public class JwtValidateToken {
 
 		if (usuario == null) {
 			throw new UsernameNotFoundException("Email não existe: "+email);
-		}
+		} 
 
-		return new MyUserDetails(usuario, usuario.getPerfis());
-    }
+		return new MyUserDetails(usuario, usuario.getPerfis()); 
+    } 
 
 }

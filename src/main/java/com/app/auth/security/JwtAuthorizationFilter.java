@@ -48,11 +48,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.info("[JwtAccessTokenFilter:doFilterInternal]Filtering the Http Request:{}",request.getRequestURI());
 
             final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-            if(authHeader == null || authHeader != null && authHeader.startsWith(TokenType.Bearer.name())){
+            
+            if(authHeader == null){
                 filterChain.doFilter(request,response);
                 return;
             }
+            if(authHeader != null && authHeader.startsWith(TokenType.Bearer.name())) {
 
             JwtDecoder jwtDecoder =  NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
 
@@ -60,9 +61,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             final Jwt jwtToken = jwtDecoder.decode(token);
 
             final String userName = jwtValidateToken.getUserName(jwtToken);
+            log.info("[JwtAccessTokenFilter:doFilterInternal] User '{}' is accessing the endpoint '{}'.", userName, request.getRequestURI());
 
             if(!userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null){
-
                 UserDetails userDetails = jwtValidateToken.userDetails(userName);
                 if(jwtValidateToken.isTokenValid(jwtToken,userDetails)){
                     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
@@ -79,7 +80,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
             log.info("[JwtAccessTokenFilter:doFilterInternal] Completed");
 
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request,response); 
+            }
 		}catch(JwtValidationException jwtValidationException) {
 			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, jwtValidationException.getMessage());
 		}

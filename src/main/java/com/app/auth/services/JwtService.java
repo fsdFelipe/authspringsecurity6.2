@@ -23,7 +23,7 @@ public class JwtService {
 	  }
 	  
 	  public long getTokenExpiry() {
-	        return 59L;
+	        return 60L;
 	    }
 
 	  public String generateToken(Authentication authentication) {

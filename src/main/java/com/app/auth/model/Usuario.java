@@ -2,12 +2,14 @@ package com.app.auth.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.app.auth.enums.Perfil;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +27,8 @@ public class Usuario {
 	private String email;
 	private String senha;
 	
-	@ElementCollection
+	
+	@ElementCollection(targetClass = Perfil.class,fetch = FetchType.EAGER)
 	@CollectionTable(name="Perfil")
 	private Set<Perfil> perfis = new HashSet<>();
 
@@ -34,6 +37,10 @@ public class Usuario {
 		this.senha = senha;
 		addPerfil(Perfil.USUARIO);
 	}
+	
+	public Set<Perfil> getPerfis(){
+		return perfis.stream().collect(Collectors.toSet());
+		}
 	
 	public void addPerfil(Perfil perfil) {
         perfis.add(perfil);
